@@ -48,7 +48,7 @@
             padding: 0;
         }
         html {
-            scroll-behavior: smooth;
+            scroll-behavior: smooth; /* Can be helpful but JS focus might override */
         }
         body {
             font-family: var(--font-family);
@@ -126,6 +126,9 @@
             box-shadow: var(--box-shadow);
             margin-bottom: 2rem;
             transition: background-color 0.3s, color 0.3s;
+        }
+        section:focus, h2:focus { /* Remove default browser outline if we manage it with JS */
+            outline: none;
         }
         section.active {
             display: block;
@@ -269,7 +272,8 @@
         }
 
         /* Accessibility enhancements */
-        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible,
+        section:focus-visible, h2:focus-visible { /* Added section and h2 for JS-managed focus */
             outline: var(--focus-outline);
             outline-offset: var(--focus-outline-offset);
             box-shadow: 0 0 0 var(--focus-outline-offset) var(--surface-color), 0 0 0 calc(var(--focus-outline-offset) + 3px) var(--accent-color); /* Double outline for contrast */
@@ -409,7 +413,7 @@
     </style>
 </head>
 <body>
-    <header role="banner">
+    <header role="banner" id="original-header">
         <h1>Children's Disability Needs Assessment</h1>
         <div class="header-controls">
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
@@ -419,10 +423,10 @@
         </div>
         <nav role="navigation" aria-label="Main navigation">
             <ul>
-                <li><a href="#home" onclick="showSection('home', this)" aria-label="Go to Home Page" class="active-nav">Home</a></li>
-                <li><a href="#assessment" onclick="showSection('assessment', this)" aria-label="Start Needs Assessment">Start Assessment</a></li>
-                <li><a href="#results" onclick="showSection('results', this)" aria-label="View Assessment Results (disabled)" aria-disabled="true" id="nav-results" class="nav-disabled">Results</a></li>
-                <li><a href="#resources" onclick="showSection('resources', this)" aria-label="View Support Resources">Resources</a></li>
+                <li><a href="#home" onclick="event.preventDefault(); showSection('home', this)" aria-label="Go to Home Page" class="active-nav">Home</a></li>
+                <li><a href="#assessment" onclick="event.preventDefault(); showSection('assessment', this)" aria-label="Start Needs Assessment">Start Assessment</a></li>
+                <li><a href="#results" onclick="event.preventDefault(); showSection('results', this)" aria-label="View Assessment Results (disabled)" aria-disabled="true" id="nav-results" class="nav-disabled">Results</a></li>
+                <li><a href="#resources" onclick="event.preventDefault(); showSection('resources', this)" aria-label="View Support Resources">Resources</a></li>
             </ul>
         </nav>
     </header>
@@ -448,7 +452,7 @@
                 <li>Intellectual disabilities</li>
             </ul>
             <div class="button-group">
-                <a href="#assessment" onclick="showSection('assessment', document.querySelector('nav a[href=\\'#assessment\\']'))" class="button" aria-label="Begin the needs assessment">Start Assessment Now</a>
+                <a href="#assessment" onclick="event.preventDefault(); showSection('assessment', document.querySelector('nav a[href=\\'#assessment\\']'));" class="button" aria-label="Begin the needs assessment">Start Assessment Now</a>
             </div>
             <p style="margin-top: 1.5rem;">For official information, please visit <a href="https://www2.hse.ie/services/disability/" target="_blank" rel="noopener noreferrer">HSE Disability Services</a>.</p>
         </section>
@@ -622,8 +626,8 @@
             </div>
             <div class="button-group">
                  <button onclick="printResults()" class="button">Print These Insights</button>
-                 <a href="#assessment" onclick="showSection('assessment', document.querySelector('nav a[href=\\'#assessment\\']'))" class="button secondary">Edit Assessment</a>
-                 <a href="#home" onclick="showSection('home', document.querySelector('nav a[href=\\'#home\\']'))" class="button secondary">Back to Home</a>
+                 <a href="#assessment" onclick="event.preventDefault(); showSection('assessment', document.querySelector('nav a[href=\\'#assessment\\']'))" class="button secondary">Edit Assessment</a>
+                 <a href="#home" onclick="event.preventDefault(); showSection('home', document.querySelector('nav a[href=\\'#home\\']'))" class="button secondary">Back to Home</a>
             </div>
         </section>
 
@@ -652,11 +656,11 @@
 
             </ul>
             <div class="button-group">
-                <a href="#home" onclick="showSection('home', document.querySelector('nav a[href=\\'#home\\']'))" class="button">Back to Home</a>
+                <a href="#home" onclick="event.preventDefault(); showSection('home', document.querySelector('nav a[href=\\'#home\\']'))" class="button">Back to Home</a>
             </div>
         </section>
     </main>
-    <footer role="contentinfo">
+    <footer role="contentinfo" id="original-footer">
         <p>© <span id="current-year">2024</span> Children's Disability Needs Assessment Prototype. Developed for demonstration purposes. Not an official HSE service.</p>
         <p>For official support and information, always visit <a href="https://www2.hse.ie/services/disability/" target="_blank" rel="noopener noreferrer">HSE Disability Services</a>.</p>
     </footer>
@@ -687,35 +691,35 @@
             navResultsLink = document.getElementById('nav-results');
 
             // Cache form field elements
-            childAgeInput = document.getElementById('child-age');
-            diagnosisSelect = document.getElementById('diagnosis');
-            diagnosisDetailsContainer = document.getElementById('diagnosis-details-container');
-            diagnosisDetailsInput = document.getElementById('diagnosis-details');
-
-            disabilityTypeSelect = document.getElementById('disability-type');
-            disabilityTypeOtherContainer = document.getElementById('disability-type-other-container');
-            disabilityTypeOtherText = document.getElementById('disability-type-other-text');
-
-            challengesCheckboxes = assessmentForm.querySelectorAll('input[name="challenges"]');
-            challengesOtherCheckbox = assessmentForm.querySelector('input[name="challenges"][value="other_challenges"]');
-            challengesOtherContainer = document.getElementById('challenges-other-container');
-            challengesOtherText = document.getElementById('challenges-other-text');
-
-            therapiesSelect = document.getElementById('therapies');
-            therapiesDetailsContainer = document.getElementById('therapies-details-container');
-            therapiesDetailsText = document.getElementById('therapies-details-text');
-
-            document.getElementById('current-year').textContent = new Date().getFullYear();
-
-            // Identify all initially required fields
             if (assessmentForm) {
+                childAgeInput = document.getElementById('child-age');
+                diagnosisSelect = document.getElementById('diagnosis');
+                diagnosisDetailsContainer = document.getElementById('diagnosis-details-container');
+                diagnosisDetailsInput = document.getElementById('diagnosis-details');
+
+                disabilityTypeSelect = document.getElementById('disability-type');
+                disabilityTypeOtherContainer = document.getElementById('disability-type-other-container');
+                disabilityTypeOtherText = document.getElementById('disability-type-other-text');
+
+                challengesCheckboxes = assessmentForm.querySelectorAll('input[name="challenges"]');
+                challengesOtherCheckbox = assessmentForm.querySelector('input[name="challenges"][value="other_challenges"]');
+                challengesOtherContainer = document.getElementById('challenges-other-container');
+                challengesOtherText = document.getElementById('challenges-other-text');
+
+                therapiesSelect = document.getElementById('therapies');
+                therapiesDetailsContainer = document.getElementById('therapies-details-container');
+                therapiesDetailsText = document.getElementById('therapies-details-text');
                 requiredFields = Array.from(assessmentForm.querySelectorAll('[required]'));
             }
 
 
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+
             initializeState();
             setupEventListeners();
-            showSection('home', document.querySelector('nav a[href="#home"]')); // Show home section by default
+            // Show home section by default, pass its corresponding nav link
+            showSection('home', document.querySelector('nav a[href="#home"]'));
         });
 
         function initializeState() {
@@ -723,9 +727,9 @@
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
-                themeToggleButton.innerHTML = '☀️ <span class="sr-only">Toggle Light Mode</span>';
+                if (themeToggleButton) themeToggleButton.innerHTML = '☀️ <span class="sr-only">Toggle Light Mode</span>';
             } else {
-                themeToggleButton.innerHTML = '🌙 <span class="sr-only">Toggle Dark Mode</span>';
+                if (themeToggleButton) themeToggleButton.innerHTML = '🌙 <span class="sr-only">Toggle Dark Mode</span>';
             }
 
             // Form data
@@ -770,6 +774,13 @@
                     }
                 });
             }
+            // Add event.preventDefault() to all nav links and back buttons that use showSection
+            document.querySelectorAll('a[href^="#"][onclick*="showSection"]').forEach(link => {
+                const originalOnclick = link.getAttribute('onclick');
+                if (originalOnclick && !originalOnclick.startsWith('event.preventDefault()')) {
+                    link.setAttribute('onclick', 'event.preventDefault(); ' + originalOnclick);
+                }
+            });
 
         }
 
@@ -792,24 +803,36 @@
             if (targetSection) {
                 targetSection.classList.add('active');
                 targetSection.setAttribute('aria-hidden', 'false');
-                targetSection.focus(); // Focus the section for screen readers
+
+                // Focus the first H2 in the section, or the section itself if no H2
+                const firstHeading = targetSection.querySelector('h2');
+                if (firstHeading) {
+                    firstHeading.setAttribute('tabindex', '-1'); // Make it focusable
+                    firstHeading.focus();
+                } else {
+                    targetSection.setAttribute('tabindex', '-1'); // Make section focusable if no h2
+                    targetSection.focus();
+                }
             }
 
             document.querySelectorAll(NAV_LINKS_SELECTOR).forEach(link => {
                 link.classList.remove('active-nav');
                 link.removeAttribute('aria-current');
             });
-            if (navLinkElement && !navLinkElement.classList.contains('nav-disabled')) {
-                navLinkElement.classList.add('active-nav');
-                navLinkElement.setAttribute('aria-current', 'page');
-            } else { // Fallback if navLinkElement not passed or if it was disabled
-                const activeNavLink = document.querySelector(`nav ul li a[href="#${sectionId}"]`);
-                if (activeNavLink && !activeNavLink.classList.contains('nav-disabled')) {
-                    activeNavLink.classList.add('active-nav');
-                    activeNavLink.setAttribute('aria-current', 'page');
-                }
+
+            let actualNavLink = navLinkElement;
+            if (!actualNavLink) { // Fallback if navLinkElement not passed
+                 actualNavLink = document.querySelector(`nav ul li a[href="#${sectionId}"]`);
             }
-            window.scrollTo(0, 0);
+
+            if (actualNavLink && !actualNavLink.classList.contains('nav-disabled')) {
+                actualNavLink.classList.add('active-nav');
+                actualNavLink.setAttribute('aria-current', 'page');
+            }
+            // Removed window.scrollTo(0,0) as focusing the heading should manage scroll.
+            // If the sticky header still causes issues, a more precise scroll might be needed, e.g.:
+            // const headerHeight = document.querySelector('header')?.offsetHeight || 0;
+            // window.scrollTo(0, targetSection.offsetTop - headerHeight);
         }
 
         // --- THEME ---
@@ -817,8 +840,10 @@
             document.body.classList.toggle('dark-mode');
             const isDarkMode = document.body.classList.contains('dark-mode');
             localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-            themeToggleButton.innerHTML = isDarkMode ? '☀️ <span class="sr-only">Toggle Light Mode</span>' : '🌙 <span class="sr-only">Toggle Dark Mode</span>';
-            themeToggleButton.setAttribute('aria-label', isDarkMode ? 'Activate light mode' : 'Activate dark mode');
+            if (themeToggleButton) {
+                themeToggleButton.innerHTML = isDarkMode ? '☀️ <span class="sr-only">Toggle Light Mode</span>' : '🌙 <span class="sr-only">Toggle Dark Mode</span>';
+                themeToggleButton.setAttribute('aria-label', isDarkMode ? 'Activate light mode' : 'Activate dark mode');
+            }
         }
 
         // --- FORM HANDLING & LOCAL STORAGE ---
@@ -846,8 +871,6 @@
                                     if (checkbox) checkbox.checked = true;
                                 });
                             } else if (element.type === 'radio') {
-                                // For radio buttons, FormData stores the value of the selected one.
-                                // Need to find and check the correct radio button by its value.
                                 const radioToSelect = assessmentForm.querySelector(`input[name="${key}"][value="${data[key]}"]`);
                                 if (radioToSelect) radioToSelect.checked = true;
                             } else if (element.nodeName === 'SELECT') {
@@ -1073,8 +1096,7 @@
                 if (errorElement) targetElement.setAttribute('aria-describedby', errorElement.id);
             } else if (targetElement.classList.contains('checkbox-group')) {
                 // For a group, set aria-invalid on the group and describedby.
-                // Individual checkboxes might not be invalid themselves, but the group requirement isn't met.
-                targetElement.setAttribute('aria-invalid', 'true'); // Or manage this more granularly if needed
+                targetElement.setAttribute('aria-invalid', 'true');
                  if (errorElement) targetElement.setAttribute('aria-describedby', errorElement.id);
             }
         }
@@ -1307,8 +1329,8 @@
                 // Restore original click behavior only if it exists
                 if (typeof navResultsLink.originalOnClick === 'function') {
                     navResultsLink.onclick = navResultsLink.originalOnClick;
-                } else {
-                     navResultsLink.onclick = (event) => showSection('results', navResultsLink); // Default if original not stored
+                } else { // Default if original not stored or was the disabled handler
+                     navResultsLink.onclick = (event) => { event.preventDefault(); showSection('results', navResultsLink);};
                 }
 
             }
@@ -1319,7 +1341,7 @@
                 navResultsLink.setAttribute('aria-disabled', 'true');
                 navResultsLink.setAttribute('aria-label', 'View Assessment Results (Complete assessment first)');
                 // Store original onclick if it's not already the disabled handler
-                if (!navResultsLink.originalOnClick && navResultsLink.onclick && navResultsLink.onclick.toString().indexOf("alert") === -1) {
+                if (!navResultsLink.originalOnClick && navResultsLink.onclick && navResultsLink.onclick.toString().indexOf("alert") === -1) { // Check it's not already the alert handler
                      navResultsLink.originalOnClick = navResultsLink.onclick;
                 }
                 // Prevent navigation if disabled
@@ -1341,26 +1363,26 @@
             printableArea.innerHTML = `
                 <style>
                     @media print {
-                        body { font-family: Arial, sans-serif; margin: 20px !important; color: #333 !important; background-color: #fff !important; }
+                        body { font-family: Arial, sans-serif !important; margin: 20px !important; color: #333 !important; background-color: #fff !important; }
                         h1, h2, h3 { color: #0055a4 !important; }
                         .disclaimer-box { border: 1px solid #d32f2f !important; padding: 10px !important; margin-bottom:15px !important; background-color: #ffebee !important; color: #c62828 !important;}
                         .disclaimer-box strong { color: #d32f2f !important; }
                         ul.resources { list-style-type: disc !important; padding-left: 20px !important; }
                         ul.resources li { margin-bottom: 8px !important; }
-                        ul.resources li::before { content: '' !important; } /* Hide custom bullet for print */
+                        ul.resources li::before { content: '' !important; display:none !important; } /* Hide custom bullet for print */
                         a { color: #0055a4 !important; text-decoration: none !important; }
-                        a[href]:after { content: " (" attr(href) ")"; font-size: 0.8em; color: #555; } /* Show URLs for links */
+                        a[href]:not([onclick*="showSection"]):after { content: " (" attr(href) ")"; font-size: 0.8em; color: #555 !important; } /* Show URLs for external links */
                         .button-group, nav, .header-controls, #theme-toggle, footer#original-footer, header#original-header { display: none !important; }
                         header.print-header h1 { text-align: center !important; font-size: 1.5em !important; margin-bottom: 10px !important;}
                         footer.print-footer { text-align: center !important; font-size: 0.8em !important; color: #555 !important; margin-top: 20px !important; border-top: 1px solid #ccc !important; padding-top: 10px !important;}
                         #results-summary p { margin-bottom: 0.5em !important; }
                         #results-summary strong { display: inline-block !important; min-width: 150px !important; font-weight: bold !important;}
                         main { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
-                        section#results { box-shadow: none !important; border: none !important; padding: 0 !important; }
+                        section#results { box-shadow: none !important; border: none !important; padding: 0 !important; margin: 0 !important; }
                         /* Remove any dark mode styles that might interfere */
                         body.dark-mode { background-color: #fff !important; color: #333 !important; }
                         .dark-mode h2, .dark-mode h3 { color: #0055a4 !important; }
-                        .dark-mode ul.resources li::before { color: #0055a4 !important; }
+                        .dark-mode ul.resources li::before { color: #0055a4 !important; display:none !important; }
                     }
                 </style>
                 <header class="print-header"><h1>Children's Disability Needs Assessment - Preliminary Insights</h1></header>
@@ -1372,6 +1394,9 @@
 
             const originalBodyHTML = document.body.innerHTML;
             const originalBodyClass = document.body.className;
+            const originalScrollX = window.scrollX;
+            const originalScrollY = window.scrollY;
+
 
             document.body.innerHTML = printableArea.innerHTML;
             document.body.className = ''; // Remove dark-mode class for printing if active
@@ -1380,9 +1405,10 @@
 
             document.body.innerHTML = originalBodyHTML;
             document.body.className = originalBodyClass; // Restore original classes
+            window.scrollTo(originalScrollX, originalScrollY); // Restore scroll position
+
 
             // Re-initialize necessary elements and event listeners
-            // This is crucial because replacing innerHTML destroys existing DOM references and listeners.
             assessmentForm = document.getElementById(ASSESSMENT_FORM_ID);
             progressBar = document.getElementById('progress-bar');
             themeToggleButton = document.getElementById('theme-toggle');
@@ -1408,13 +1434,11 @@
             document.getElementById('current-year').textContent = new Date().getFullYear();
 
 
-            initializeState(); // Re-apply theme, load form data, update progress bar, dynamic fields
-            setupEventListeners(); // Re-attach all event listeners
+            initializeState();
+            setupEventListeners();
 
-            // Restore the active section.
-            const activeNav = document.querySelector('nav a.active-nav');
-            const activeSectionId = activeNav ? activeNav.getAttribute('href').substring(1) : 'home';
-            showSection(activeSectionId, activeNav || document.querySelector('nav a[href="#home"]'));
+            const activeNavForRestore = document.querySelector(`nav a[href="#results"]`);
+            showSection('results', activeNavForRestore);
         }
 
     </script>
