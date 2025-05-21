@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Enhanced prototype for assessing needs of children with disabilities in Ireland, aligned with HSE guidelines.">
+    <title>Children's Disability Needs Assessment - Ireland</title>
+    <style>
+        /* Professional and accessible CSS - Enhanced */
+        :root {
+            --primary-color: #0055a4; /* HSE Blue */
+            --secondary-color: #003366; /* Darker HSE Blue */
+            --accent-color: #ffcc00; /* Yellow Accent */
+            --text-color: #333;
+            --bg-color: #f5f7fa;
+            --surface-color: #fff;
+            --error-color: #d32f2f;
+            --success-color: #388e3c;
+            --border-color: #ccc;
+            --disabled-bg-color: #e0e0e0;
+            --disabled-text-color: #9e9e9e;
+
+            --font-family: 'Arial', sans-serif;
+            --header-font-size: 1.8rem;
+            --h2-font-size: 1.5rem;
+            --body-font-size: 1rem;
+            --line-height: 1.6;
+            --border-radius: 4px;
+            --box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            --focus-outline: 3px solid var(--accent-color);
+            --focus-outline-offset: 2px;
+        }
+
+        .dark-mode {
+            --primary-color: #007bff; /* Brighter blue for dark mode */
+            --secondary-color: #0056b3;
+            --text-color: #e0e0e0;
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --border-color: #444;
+            --disabled-bg-color: #333;
+            --disabled-text-color: #777;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: var(--line-height);
+            margin: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        header h1 {
+            font-size: var(--header-font-size);
+            margin-bottom: 0.5rem;
+        }
+        .header-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .theme-toggle {
+            background: none;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 0.3rem 0.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .theme-toggle:hover {
+            background-color: var(--secondary-color);
+        }
+        nav {
+            background-color: var(--secondary-color);
+            padding: 0.5rem;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            display: inline-block;
+        }
+        nav ul li a:hover, nav ul li a:focus, nav ul li a.active-nav {
+            background-color: var(--primary-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 0 2px var(--accent-color);
+        }
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        section {
+            display: none;
+            background-color: var(--surface-color);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: var(--h2-font-size);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+        p, ul {
+            margin-bottom: 1rem;
+        }
+        .button, button[type="submit"] {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 0.85rem 1.75rem;
+            border: none;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            font-weight: bold;
+        }
+        .button:hover, .button:focus, button[type="submit"]:hover, button[type="submit"]:focus {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        .button.secondary {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+        }
+        .button.secondary:hover, .button.secondary:focus {
+            background-color: var(--border-color);
+            color: var(--text-color);
+        }
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: block; /* Better spacing for inputs */
+        }
+        input[type="text"], input[type="number"], input[type="email"], select, textarea {
+            width: 100%;
+            padding: 0.85rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input:disabled, select:disabled, textarea:disabled {
+            background-color: var(--disabled-bg-color);
+            color: var(--disabled-text-color);
+            cursor: not-allowed;
+        }
+        input[type="checkbox"], input[type="radio"] {
+            width: auto;
+            margin-right: 0.7rem;
+            accent-color: var(--primary-color);
+            vertical-align: middle;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        .checkbox-group, .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+        .checkbox-group label, .radio-group label {
+            font-weight: normal; /* Override bold for individual options */
+        }
+        .error {
+            color: var(--error-color);
+            font-size: 0.9rem;
+            display: none; /* Hidden by default */
+            margin-top: 0.25rem;
+        }
+        .success {
+            color: var(--success-color);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+        input.invalid, select.invalid, textarea.invalid {
+            border-color: var(--error-color);
+            box-shadow: 0 0 0 2px var(--error-color);
+        }
+        ul.resources {
+            list-style: none; /* Remove default disc */
+            padding-left: 0;
+        }
+        ul.resources li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+        ul.resources li::before {
+            content: '➔'; /* Custom bullet */
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+        }
+        footer {
+            background-color: var(--secondary-color);
+            color: #e0e0e0; /* Lighter for dark blue */
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Accessibility enhancements */
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: var(--focus-outline);
+            outline-offset: var(--focus-outline-offset);
+            box-shadow: 0 0 0 var(--focus-outline-offset) var(--surface-color), 0 0 0 calc(var(--focus-outline-offset) + 3px) var(--accent-color); /* Double outline for contrast */
+        }
+        
+        .sr-only { /* Screen Reader Only */
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Progress Bar */
+        #progress-bar-container {
+            width: 100%;
+            background-color: var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 20px;
+            background-color: var(--success-color);
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Input field required indicator */
+        label.required::after {
+            content: " *";
+            color: var(--error-color);
+        }
+
+        /* Tooltip for info icons (optional) */
+        .info-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 12px;
+            line-height: 16px;
+            cursor: help;
+            margin-left: 5px;
+            position: relative;
+        }
+        .info-icon .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--secondary-color);
+            color: #fff;
+            text-align: center;
+            border-radius: var(--border-radius);
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* Position above the icon */
+            left: 50%;
+            margin-left: -100px; /* Center the tooltip */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .info-icon:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        .disclaimer-box {
+            border: 2px solid var(--error-color);
+            background-color: #ffebee; /* Light red */
+            color: #c62828; /* Darker red text */
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+        .dark-mode .disclaimer-box {
+            background-color: #4a1c1c;
+            color: #ffcdd2;
+        }
+        .disclaimer-box strong {
+            color: var(--error-color);
+        }
+        .dark-mode .disclaimer-box strong {
+            color: #ef9a9a;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+            .header-controls {
+                position: static;
+                margin-top: 0.5rem;
+            }
+            nav ul {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        @media (max-width: 600px) {
+            main {
+                margin: 1rem;
+                padding: 0 0.5rem;
+            }
+            section {
+                padding: 1.5rem;
+            }
+            .button, button[type="submit"] {
+                width: 100%;
+                padding: 1rem;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header role="banner">
+        <h1>Children's Disability Needs Assessment</h1>
+        <div class="header-controls">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="sr-only">Toggle Dark Mode</span>
+                🌙 {/* Icon will be replaced by JS */}
+            </button>
+        </div>
+        <nav role="navigation" aria-label="Main navigation">
+            <ul>
+                <li><a href="#home" onclick="showSection('home', this)" aria-label="Go to Home Page" class="active-nav">Home</a></li>
+                <li><a href="#assessment" onclick="showSection('assessment', this)" aria-label="Start Needs Assessment">Start Assessment</a></li>
+                <li><a href="#results" onclick="showSection('results', this)" aria-label="View Assessment Results (disabled)" aria-disabled="true" id="nav-results" class="nav-disabled">Results</a></li>
+                <li><a href="#resources" onclick="showSection('resources', this)" aria-label="View Support Resources">Resources</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main role="main">
+        <!-- Home Page Section -->
+        <section id="home" class="active" role="region" aria-labelledby="home-heading">
+            <h2 id="home-heading">Welcome to the Needs Assessment Prototype</h2>
+            <p>This interactive prototype is designed to help parents and guardians in Ireland begin to identify potential support needs for children with disabilities. It serves as a preliminary guide and aims to familiarize you with the types of information considered in the HSE's formal <a href="https://www2.hse.ie/services/disability/disability-assessment/" target="_blank" rel="noopener noreferrer">Assessment of Need (AON)</a> process under the Disability Act 2005.</p>
+            <p><strong>Key Features:</strong></p>
+            <ul>
+                <li>Guided assessment questions.</li>
+                <li>Dynamic feedback based on your inputs.</li>
+                <li>Secure local saving of your progress (data stays on your device).</li>
+                <li>Links to official HSE resources.</li>
+            </ul>
+            <p>Remember, this tool does not replace a professional assessment. The goal is to empower you with information and prepare you for discussions with healthcare professionals and <a href="https://www2.hse.ie/services/disability/childrens-services/services/overview/" target="_blank" rel="noopener noreferrer">Children's Disability Network Teams (CDNTs)</a>.</p>
+            <p>Based on 2022 Census data, common disabilities in children include:</p>
+            <ul class="resources">
+                <li>Difficulties with learning, remembering, or concentrating</li>
+                <li>Psychological or emotional conditions (affecting around 5% of the population)</li>
+                <li>Challenges with basic physical activities</li>
+                <li>Pain, breathing difficulties, or chronic illness (affecting around 9% of the population)</li>
+                <li>Intellectual disabilities</li>
+            </ul>
+            <div class="button-group">
+                <a href="#assessment" onclick="showSection('assessment', document.querySelector('nav a[href=\\'#assessment\\']'))" class="button" aria-label="Begin the needs assessment">Start Assessment Now</a>
+            </div>
+            <p style="margin-top: 1.5rem;">For official information, please visit <a href="https://www2.hse.ie/services/disability/" target="_blank" rel="noopener noreferrer">HSE Disability Services</a>.</p>
+        </section>
+
+        <!-- Assessment Page Section -->
+        <section id="assessment" role="region" aria-labelledby="assessment-heading">
+            <h2 id="assessment-heading">Needs Assessment Form</h2>
+            <p>Please provide details about your child to help identify their support needs. Fields marked with <span style="color: var(--error-color);">*</span> are required. Your data is saved locally in your browser and not sent to any server.</p>
+            
+            <div id="progress-bar-container">
+                <div id="progress-bar">0%</div>
+            </div>
+
+            <form id="assessment-form" onsubmit="handleSubmit(event)">
+                <div>
+                    <label for="child-name">Child's First Name (Optional):</label>
+                    <input type="text" id="child-name" name="childName" aria-describedby="child-name-desc">
+                    <p id="child-name-desc" class="sr-only">Enter your child's first name or leave blank for anonymity.</p>
+                </div>
+                <div>
+                    <label for="child-age" class="required">Child's Age (0-18):</label>
+                    <input type="number" id="child-age" name="childAge" min="0" max="18" required aria-describedby="age-error">
+                    <p id="age-error" class="error">Please enter an age between 0 and 18.</p>
+                </div>
+                 <div>
+                    <label for="child-county" class="required">County of Residence:</label>
+                    <select id="child-county" name="childCounty" required>
+                        <option value="">Select County</option>
+                        <option value="Carlow">Carlow</option><option value="Cavan">Cavan</option><option value="Clare">Clare</option>
+                        <option value="Cork">Cork</option><option value="Donegal">Donegal</option><option value="Dublin">Dublin</option>
+                        <option value="Galway">Galway</option><option value="Kerry">Kerry</option><option value="Kildare">Kildare</option>
+                        <option value="Kilkenny">Kilkenny</option><option value="Laois">Laois</option><option value="Leitrim">Leitrim</option>
+                        <option value="Limerick">Limerick</option><option value="Longford">Longford</option><option value="Louth">Louth</option>
+                        <option value="Mayo">Mayo</option><option value="Meath">Meath</option><option value="Monaghan">Monaghan</option>
+                        <option value="Offaly">Offaly</option><option value="Roscommon">Roscommon</option><option value="Sligo">Sligo</option>
+                        <option value="Tipperary">Tipperary</option><option value="Waterford">Waterford</option><option value="Westmeath">Westmeath</option>
+                        <option value="Wexford">Wexford</option><option value="Wicklow">Wicklow</option>
+                    </select>
+                    <p id="county-error" class="error">Please select a county.</p>
+                </div>
+                <div>
+                    <label for="diagnosis" class="required">Has the child received a formal diagnosis for a disability?</label>
+                    <select id="diagnosis" name="diagnosisStatus" required aria-describedby="diagnosis-desc">
+                        <option value="">Select</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                        <option value="pending">Assessment Pending / Unsure</option>
+                    </select>
+                    <p id="diagnosis-desc" class="sr-only">Indicate if your child has a formal diagnosis.</p>
+                    <p id="diagnosis-error" class="error">Please select an option.</p>
+                </div>
+                <div id="diagnosis-details-container" style="display: none;">
+                    <label for="diagnosis-details" class="required">Please specify the diagnosis (if known):</label>
+                    <input type="text" id="diagnosis-details" name="diagnosisDetails" placeholder="e.g., Autism Spectrum Disorder, ADHD, Down Syndrome">
+                    <p id="diagnosis-details-error" class="error">Please specify the diagnosis or type 'N/A' if not comfortable sharing.</p>
+                </div>
+                <div>
+                    <label for="disability-type" class="required">Primary Area of Concern / Disability Type:</label>
+                    <select id="disability-type" name="disabilityType" required>
+                        <option value="">Select Primary Concern</option>
+                        <option value="autism">Autism Spectrum Disorder (ASD)</option>
+                        <option value="adhd">Attention Deficit Hyperactivity Disorder (ADHD)</option>
+                        <option value="intellectual">Intellectual Disability</option>
+                        <option value="learning_specific">Specific Learning Difficulty (e.g., Dyslexia)</option>
+                        <option value="communication_speech">Communication / Speech & Language Disorder</option>
+                        <option value="physical_mobility">Physical / Mobility Impairment</option>
+                        <option value="sensory_vision">Sensory Impairment - Vision</option>
+                        <option value="sensory_hearing">Sensory Impairment - Hearing</option>
+                        <option value="mental_health">Mental Health Condition (e.g., Anxiety, Depression)</option>
+                        <option value="chronic_illness">Chronic Illness / Medical Condition</option>
+                        <option value="developmental_delay">Global Developmental Delay</option>
+                        <option value="multiple">Multiple Disabilities / Complex Needs</option>
+                        <option value="other">Other (Please specify below)</option>
+                        <option value="unsure">Unsure / Needs Assessment</option>
+                    </select>
+                     <p id="disability-type-error" class="error">Please select an option.</p>
+                </div>
+                 <div id="disability-type-other-container" style="display: none;">
+                    <label for="disability-type-other-text" class="required">Specify other primary concern:</label>
+                    <textarea id="disability-type-other-text" name="disabilityTypeOther" placeholder="Describe the primary concern"></textarea>
+                    <p id="disability-type-other-error" class="error">Please specify.</p>
+                </div>
+
+                <div>
+                    <fieldset>
+                        <legend class="required">Specific Challenges Observed (select all that apply):
+                            <span class="info-icon" title="Select areas where your child faces difficulties.">i
+                                <span class="tooltip-text">Select all areas where your child faces notable difficulties compared to peers.</span>
+                            </span>
+                        </legend>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="challenges" value="learning_memory_concentration"> Learning, remembering, or concentrating</label>
+                            <label><input type="checkbox" name="challenges" value="communication_understanding"> Communication (understanding or being understood)</label>
+                            <label><input type="checkbox" name="challenges" value="social_interaction"> Social interaction and making friends</label>
+                            <label><input type="checkbox" name="challenges" value="emotional_regulation"> Emotional regulation (managing feelings, behaviour)</label>
+                            <label><input type="checkbox" name="challenges" value="mobility_physical"> Mobility and physical activities</label>
+                            <label><input type="checkbox" name="challenges" value="self_care"> Self-care skills (dressing, feeding, hygiene)</label>
+                            <label><input type="checkbox" name="challenges" value="sensory_processing"> Sensory processing (reactions to sounds, lights, textures)</label>
+                            <label><input type="checkbox" name="challenges" value="play_leisure"> Play and leisure activities</label>
+                            <label><input type="checkbox" name="challenges" value="other_challenges"> Other specific challenges</label>
+                        </div>
+                        <p id="challenges-error" class="error">Please select at least one challenge.</p>
+                    </fieldset>
+                </div>
+                <div id="challenges-other-container" style="display: none;">
+                     <label for="challenges-other-text" class="required">Specify other challenges:</label>
+                     <textarea id="challenges-other-text" name="challengesOtherText" placeholder="Describe other specific challenges"></textarea>
+                     <p id="challenges-other-text-error" class="error">Please specify other challenges or uncheck 'Other'.</p>
+                </div>
+
+                <div>
+                    <label for="therapies" class="required">Is the child currently receiving any therapies or specialist interventions?</label>
+                    <select id="therapies" name="therapiesStatus" required>
+                        <option value="">Select</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                        <option value="waiting_list">On a waiting list</option>
+                    </select>
+                    <p id="therapies-error" class="error">Please select an option.</p>
+                </div>
+                <div id="therapies-details-container" style="display: none;">
+                    <label for="therapies-details-text" class="required">Details of current therapies/interventions (or those on waiting list for):</label>
+                    <textarea id="therapies-details-text" name="therapiesDetailsText" placeholder="e.g., Speech therapy (HSE, weekly), Occupational Therapy (Private, fortnightly), Play therapy (Waiting list)"></textarea>
+                    <p id="therapies-details-text-error" class="error">Please provide details or indicate N/A.</p>
+                </div>
+
+                <div>
+                    <label for="support">Current Support Network (Optional):</label>
+                    <textarea id="support" name="currentSupport" placeholder="Describe current support from family, school, SNAs, community groups, etc."></textarea>
+                </div>
+                <div>
+                    <label for="additional-support" class="required">What are your main goals or additional support you are seeking for your child?</label>
+                    <textarea id="additional-support" name="additionalSupportSought" required placeholder="e.g., Access to speech therapy, help with school inclusion, support for managing behaviour, information on financial assistance."></textarea>
+                    <p id="additional-support-error" class="error">Please describe the support you are seeking.</p>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="button" id="submit-assessment-button">
+                        <span class="button-text">Submit Assessment</span>
+                        <span class="spinner" style="display: none;">⚙️</span>
+                    </button>
+                    <button type="button" class="button secondary" id="clear-form-button">Clear Form & Data</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Results Page Section -->
+        <section id="results" role="region" aria-labelledby="results-heading">
+            <h2 id="results-heading">Preliminary Assessment Insights</h2>
+            <div class="disclaimer-box">
+                <p><strong>IMPORTANT DISCLAIMER:</strong> This is a prototype tool and its output is for informational purposes only. It <strong>does not</strong> constitute a formal Assessment of Need (AON) as defined by the Disability Act 2005. The recommendations provided are general suggestions based on your input.</p>
+                <p>For an official assessment and access to HSE services, you <strong>must</strong> contact your local <a href="https://www2.hse.ie/services/disability/childrens-services/services/overview/" target="_blank" rel="noopener noreferrer">Children's Disability Network Team (CDNT)</a>. This tool can help you prepare for that conversation.</p>
+            </div>
+            <div id="results-summary">
+                <h3>Summary of Your Input:</h3>
+                <p><strong>Child's Age:</strong> <span id="summary-age"></span></p>
+                <p><strong>County:</strong> <span id="summary-county"></span></p>
+                <p><strong>Diagnosis Status:</strong> <span id="summary-diagnosis-status"></span></p>
+                <p id="summary-diagnosis-details-para" style="display:none;"><strong>Diagnosis Details:</strong> <span id="summary-diagnosis-details"></span></p>
+                <p><strong>Primary Concern:</strong> <span id="summary-disability-type"></span></p>
+                <p><strong>Observed Challenges:</strong> <span id="summary-challenges"></span></p>
+                <p><strong>Current Therapies:</strong> <span id="summary-therapies-status"></span></p>
+                <p id="summary-therapies-details-para" style="display:none;"><strong>Therapy Details:</strong> <span id="summary-therapies-details"></span></p>
+                <p><strong>Support Sought:</strong> <span id="summary-additional-support"></span></p>
+            </div>
+            <div id="results-content">
+                <h3>Potential Next Steps & Considerations:</h3>
+                <ul class="resources" id="results-list">
+                    <!-- Results will be populated here by JavaScript -->
+                </ul>
+            </div>
+            <div class="button-group">
+                 <button onclick="printResults()" class="button">Print These Insights</button>
+                 <a href="#assessment" onclick="showSection('assessment', document.querySelector('nav a[href=\\'#assessment\\']'))" class="button secondary">Edit Assessment</a>
+                 <a href="#home" onclick="showSection('home', document.querySelector('nav a[href=\\'#home\\']'))" class="button secondary">Back to Home</a>
+            </div>
+        </section>
+
+        <!-- Resources Page Section -->
+        <section id="resources" role="region" aria-labelledby="resources-heading">
+            <h2 id="resources-heading">Key Support Resources in Ireland</h2>
+            <p>This curated list provides starting points for finding information, support, and services for children with disabilities in Ireland. Always refer to the HSE for the most current and official information.</p>
+            <ul class="resources">
+                <li><a href="https://www2.hse.ie/services/disability/" target="_blank" rel="noopener noreferrer">HSE Disability Services</a> - Main portal for official health services and disability support.</li>
+                <li><a href="https://www2.hse.ie/services/disability/childrens-services/services/overview/" target="_blank" rel="noopener noreferrer">Children's Disability Network Teams (CDNTs)</a> - Your local point of contact for assessments (AON), information, and coordination of services.</li>
+                 <li><a href="https://www2.hse.ie/services/disability/disability-assessment/" target="_blank" rel="noopener noreferrer">Assessment of Need (AON) Information</a> - Detailed explanation of the formal AON process.</li>
+                <li><a href="https://www.citizensinformation.ie/en/health/disability-and-illness/" target="_blank" rel="noopener noreferrer">Citizens Information - Disability & Illness</a> - Comprehensive information on rights, entitlements, and services.</li>
+                <li><a href="https://ncse.ie/for-parents" target="_blank" rel="noopener noreferrer">National Council for Special Education (NCSE)</a> - Information and support for children with special educational needs in schools.</li>
+                <li><a href="https://www.gov.ie/en/organisation/department-of-children-equality-disability-integration-and-youth/" target="_blank" rel="noopener noreferrer">Department of Children, Equality, Disability, Integration and Youth</a> - Government department overseeing policy.</li>
+                <li><a href="https://www.sess.ie/" target="_blank" rel="noopener noreferrer">Special Education Support Service (SESS)</a> - Now part of NCSE, offers resources and support for schools. (Link may redirect to NCSE)</li>
+                <li><a href="https://enableireland.ie/" target="_blank" rel="noopener noreferrer">Enable Ireland</a> - Provides services to children and adults with disabilities and their families.</li>
+                <li><a href="https://downsyndrome.ie/" target="_blank" rel="noopener noreferrer">Down Syndrome Ireland</a> - Support and services for individuals with Down syndrome and their families.</li>
+                <li><a href="https://autism.ie/" target="_blank" rel="noopener noreferrer">AsIAm - Ireland's National Autism Charity</a> - Advocacy and support for the Autism community.</li>
+                <li><a href="https://www.inclusionireland.ie/" target="_blank" rel="noopener noreferrer">Inclusion Ireland</a> - National association for people with an intellectual disability.</li>
+                 <li><a href="https://www.disability-federation.ie/" target="_blank" rel="noopener noreferrer">Disability Federation of Ireland (DFI)</a> - Advocates for the rights and inclusion of people with disabilities.</li>
+            </ul>
+            <div class="button-group">
+                <a href="#home" onclick="showSection('home', document.querySelector('nav a[href=\\'#home\\']'))" class="button">Back to Home</a>
+            </div>
+        </section>
+    </main>
+    <footer role="contentinfo">
+        <p>© <span id="current-year">2024</span> Children's Disability Needs Assessment Prototype. Developed for demonstration purposes. Not an official HSE service.</p>
+        <p>For official support and information, always visit <a href="https://www2.hse.ie/services/disability/" target="_blank" rel="noopener noreferrer">HSE Disability Services</a>.</p>
+    </footer>
+
+    <script>
+        // --- CONFIGURATION ---
+        const ASSESSMENT_FORM_ID = 'assessment-form';
+        const LOCAL_STORAGE_KEY = 'childrenDisabilityAssessmentData';
+        const NAV_LINKS_SELECTOR = 'nav ul li a';
+
+        // --- DOM ELEMENTS ---
+        let assessmentForm;
+        let progressBar;
+        let themeToggleButton;
+        let navResultsLink;
+        // Form fields (cached for performance and easier access)
+        let childAgeInput, diagnosisSelect, diagnosisDetailsContainer, diagnosisDetailsInput;
+        let disabilityTypeSelect, disabilityTypeOtherContainer, disabilityTypeOtherText;
+        let challengesCheckboxes, challengesOtherCheckbox, challengesOtherContainer, challengesOtherText;
+        let therapiesSelect, therapiesDetailsContainer, therapiesDetailsText;
+        let requiredFields = [];
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            assessmentForm = document.getElementById(ASSESSMENT_FORM_ID);
+            progressBar = document.getElementById('progress-bar');
+            themeToggleButton = document.getElementById('theme-toggle');
+            navResultsLink = document.getElementById('nav-results');
+
+            // Cache form field elements
+            childAgeInput = document.getElementById('child-age');
+            diagnosisSelect = document.getElementById('diagnosis');
+            diagnosisDetailsContainer = document.getElementById('diagnosis-details-container');
+            diagnosisDetailsInput = document.getElementById('diagnosis-details');
+            
+            disabilityTypeSelect = document.getElementById('disability-type');
+            disabilityTypeOtherContainer = document.getElementById('disability-type-other-container');
+            disabilityTypeOtherText = document.getElementById('disability-type-other-text');
+
+            challengesCheckboxes = assessmentForm.querySelectorAll('input[name="challenges"]');
+            challengesOtherCheckbox = assessmentForm.querySelector('input[name="challenges"][value="other_challenges"]');
+            challengesOtherContainer = document.getElementById('challenges-other-container');
+            challengesOtherText = document.getElementById('challenges-other-text');
+
+            therapiesSelect = document.getElementById('therapies');
+            therapiesDetailsContainer = document.getElementById('therapies-details-container');
+            therapiesDetailsText = document.getElementById('therapies-details-text');
+
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            // Identify all initially required fields
+            requiredFields = Array.from(assessmentForm.querySelectorAll('[required]'));
+
+            initializeState();
+            setupEventListeners();
+            showSection('home', document.querySelector('nav a[href="#home"]')); // Show home section by default
+        });
+
+        function initializeState() {
+            // Theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggleButton.innerHTML = '☀️ <span class="sr-only">Toggle Light Mode</span>';
+            } else {
+                themeToggleButton.innerHTML = '🌙 <span class="sr-only">Toggle Dark Mode</span>';
+            }
+
+            // Form data
+            loadFormData();
+            updateProgressBar(); // Update progress bar based on loaded data
+            handleDynamicFieldsVisibility(); // Set initial visibility of dynamic fields
+
+            // Results tab state
+            if (localStorage.getItem(LOCAL_STORAGE_KEY + '_submitted')) {
+                enableResultsTab();
+            } else {
+                disableResultsTab();
+            }
+        }
+
+        function setupEventListeners() {
+            // Theme toggle
+            themeToggleButton.addEventListener('click', toggleTheme);
+
+            // Form input/change listeners for dynamic fields, progress bar, and local storage
+            if (assessmentForm) {
+                assessmentForm.addEventListener('input', handleFormInteraction);
+                assessmentForm.addEventListener('change', handleFormInteraction); // For select, checkbox, radio
+
+                // Specific listeners for dynamic fields
+                diagnosisSelect.addEventListener('change', handleDynamicFieldsVisibility);
+                disabilityTypeSelect.addEventListener('change', handleDynamicFieldsVisibility);
+                if(challengesOtherCheckbox) challengesOtherCheckbox.addEventListener('change', handleDynamicFieldsVisibility);
+                therapiesSelect.addEventListener('change', handleDynamicFieldsVisibility);
+
+                document.getElementById('clear-form-button').addEventListener('click', clearFormAndData);
+            }
+             // Prevent form submission if fields are invalid (browser validation might not catch all custom logic)
+            assessmentForm.addEventListener('submit', event => {
+                if (!validateForm()) {
+                    event.preventDefault(); // Stop submission
+                    // Alert or more prominent message can be added here
+                    console.warn("Form validation failed. Submission prevented.");
+                }
+            });
+        }
+        
+        function handleFormInteraction(event) {
+            saveFormData();
+            updateProgressBar();
+            if (event.target.name) { // If the target has a name, it's likely a form field we want to validate on interaction
+                 validateField(event.target);
+            }
+        }
+
+
+        // --- NAVIGATION ---
+        function showSection(sectionId, navLinkElement = null) {
+            document.querySelectorAll('main section').forEach(section => {
+                section.classList.remove('active');
+                section.setAttribute('aria-hidden', 'true');
+            });
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.setAttribute('aria-hidden', 'false');
+                targetSection.focus(); // Focus the section for screen readers
+            }
+
+            document.querySelectorAll(NAV_LINKS_SELECTOR).forEach(link => {
+                link.classList.remove('active-nav');
+                link.removeAttribute('aria-current');
+            });
+            if (navLinkElement) {
+                navLinkElement.classList.add('active-nav');
+                navLinkElement.setAttribute('aria-current', 'page');
+            } else { // Fallback if navLinkElement not passed (e.g. on direct call)
+                const activeNavLink = document.querySelector(`nav ul li a[href="#${sectionId}"]`);
+                if (activeNavLink) {
+                    activeNavLink.classList.add('active-nav');
+                    activeNavLink.setAttribute('aria-current', 'page');
+                }
+            }
+            window.scrollTo(0, 0);
+        }
+
+        // --- THEME ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            themeToggleButton.innerHTML = isDarkMode ? '☀️ <span class="sr-only">Toggle Light Mode</span>' : '🌙 <span class="sr-only">Toggle Dark Mode</span>';
+            themeToggleButton.setAttribute('aria-label', isDarkMode ? 'Activate light mode' : 'Activate dark mode');
+        }
+
+        // --- FORM HANDLING & LOCAL STORAGE ---
+        function saveFormData() {
+            if (!assessmentForm) return;
+            const formData = new FormData(assessmentForm);
+            const data = Object.fromEntries(formData.entries());
+            // Handle checkboxes explicitly as FormData only includes checked ones
+            data.challenges = Array.from(assessmentForm.querySelectorAll('input[name="challenges"]:checked')).map(cb => cb.value);
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadFormData() {
+            if (!assessmentForm) return;
+            const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const element = assessmentForm.elements[key];
+                        if (element) {
+                            if (key === 'challenges') { // Handle checkboxes
+                                (data[key] || []).forEach(value => {
+                                    const checkbox = assessmentForm.querySelector(`input[name="challenges"][value="${value}"]`);
+                                    if (checkbox) checkbox.checked = true;
+                                });
+                            } else if (element.type === 'radio') {
+                                const radioToSelect = assessmentForm.querySelector(`input[name="${key}"][value="${data[key]}"]`);
+                                if (radioToSelect) radioToSelect.checked = true;
+                            }
+                            else {
+                                element.value = data[key];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function clearFormAndData() {
+            if (confirm("Are you sure you want to clear all entered data? This cannot be undone.")) {
+                if (assessmentForm) assessmentForm.reset();
+                localStorage.removeItem(LOCAL_STORAGE_KEY);
+                localStorage.removeItem(LOCAL_STORAGE_KEY + '_submitted'); // Clear submission flag
+                updateProgressBar();
+                handleDynamicFieldsVisibility(); // Reset dynamic fields visibility
+                disableResultsTab();
+                // Clear all error messages
+                document.querySelectorAll('.error').forEach(err => {
+                    err.style.display = 'none';
+                    err.textContent = ''; // Clear text content
+                });
+                document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+                showSection('assessment', document.querySelector('nav a[href="#assessment"]'));
+            }
+        }
+
+        // --- DYNAMIC FORM FIELD VISIBILITY ---
+        function handleDynamicFieldsVisibility() {
+            // Diagnosis Details
+            const showDiagnosisDetails = diagnosisSelect.value === 'yes';
+            diagnosisDetailsContainer.style.display = showDiagnosisDetails ? 'block' : 'none';
+            diagnosisDetailsInput.required = showDiagnosisDetails;
+
+            // "Other" Disability Type
+            const showDisabilityTypeOther = disabilityTypeSelect.value === 'other';
+            disabilityTypeOtherContainer.style.display = showDisabilityTypeOther ? 'block' : 'none';
+            disabilityTypeOtherText.required = showDisabilityTypeOther;
+
+            // "Other" Challenges
+            const showChallengesOther = challengesOtherCheckbox && challengesOtherCheckbox.checked;
+            challengesOtherContainer.style.display = showChallengesOther ? 'block' : 'none';
+            challengesOtherText.required = showChallengesOther;
+
+            // Therapies Details
+            const showTherapiesDetails = therapiesSelect.value === 'yes' || therapiesSelect.value === 'waiting_list';
+            therapiesDetailsContainer.style.display = showTherapiesDetails ? 'block' : 'none';
+            therapiesDetailsText.required = showTherapiesDetails;
+
+            updateProgressBar(); // Recalculate progress as required fields might change
+        }
+
+        // --- PROGRESS BAR ---
+        function updateProgressBar() {
+            if (!assessmentForm || !progressBar) return;
+            
+            const allFields = Array.from(assessmentForm.elements).filter(el => el.name && (el.type !== 'hidden' && el.type !== 'submit' && el.type !== 'button' && el.type !== 'reset'));
+            const currentRequiredFields = allFields.filter(field => field.required);
+
+            if (currentRequiredFields.length === 0) {
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+                return;
+            }
+
+            let filledRequiredFields = 0;
+            currentRequiredFields.forEach(field => {
+                let isFilled = false;
+                if (field.type === 'checkbox') {
+                    // For a group of checkboxes that are collectively required (e.g. 'challenges')
+                    // we need a special check. For now, assuming individual required checkboxes are rare.
+                    // If a fieldset of checkboxes is required, it means at least one must be checked.
+                    const fieldset = field.closest('fieldset');
+                    if (fieldset && fieldset.querySelector('legend.required')) {
+                         if (Array.from(fieldset.querySelectorAll('input[type="checkbox"]:checked')).length > 0) {
+                            isFilled = true;
+                            // Count this as one filled "requirement" for the group
+                            // To avoid overcounting, this logic needs refinement if multiple such groups exist.
+                            // For simplicity, let's assume this targets the main 'challenges' group if it's marked required.
+                         }
+                    } else if (field.checked) { // Individual required checkbox
+                        isFilled = true;
+                    }
+                } else if (field.type === 'radio') {
+                    const radioGroup = assessmentForm.elements[field.name];
+                    if (radioGroup && radioGroup.value) isFilled = true;
+                } else if (field.value && field.value.trim() !== '') {
+                    isFilled = true;
+                }
+
+                if (isFilled) {
+                    filledRequiredFields++;
+                }
+            });
+            
+            // Special handling for the challenges checkbox group if it's considered one "required" item
+            const challengesFieldset = document.querySelector('fieldset legend.required')?.closest('fieldset');
+            let challengesRequirementMet = false;
+            if (challengesFieldset) {
+                if (Array.from(challengesFieldset.querySelectorAll('input[name="challenges"]:checked')).length > 0) {
+                    challengesRequirementMet = true;
+                }
+            }
+
+            // Adjust total required count if challenges group counts as one
+            const totalEffectiveRequired = currentRequiredFields.length - (challengesFieldset ? (challengesCheckboxes.length -1) : 0) ;
+            let filledEffectiveRequired = filledRequiredFields;
+            if (challengesFieldset && !challengesRequirementMet) {
+                // if the requirement ISN'T met, and filledRequiredFields counted individual ones, adjust
+            } else if (challengesFieldset && challengesRequirementMet && filledRequiredFields > (totalEffectiveRequired -1) ){
+                // If challenge is met, ensure it's not over-counted due to individual items.
+                // This part is tricky. A simpler way is to count distinct required "questions".
+            }
+            
+            // Simpler progress: Count questions rather than individual input elements
+            let distinctRequiredQuestions = new Set();
+            currentRequiredFields.forEach(field => distinctRequiredQuestions.add(field.name));
+            let filledDistinctQuestions = 0;
+            distinctRequiredQuestions.forEach(name => {
+                const element = assessmentForm.elements[name];
+                if (element.length && element[0].type === 'radio') { // Radio group
+                    if (assessmentForm.elements[name].value) filledDistinctQuestions++;
+                } else if (name === 'challenges') { // Checkbox group
+                    if (challengesRequirementMet) filledDistinctQuestions++;
+                }
+                else if (element.value && element.value.trim() !== '') {
+                    filledDistinctQuestions++;
+                }
+            });
+
+
+            const progress = distinctRequiredQuestions.size > 0 ? (filledDistinctQuestions / distinctRequiredQuestions.size) * 100 : 0;
+            progressBar.style.width = `${Math.round(progress)}%`;
+            progressBar.textContent = `${Math.round(progress)}%`;
+        }
+
+
+        // --- VALIDATION ---
+        function validateField(field) {
+            let isValid = true;
+            const errorElement = document.getElementById(`${field.id}-error`) || 
+                                 (field.name === 'challenges' ? document.getElementById('challenges-error') : null) ||
+                                 document.getElementById(`${field.name}-error`); // Fallback for elements like 'challenges-other-text'
+            
+            const fieldLabel = document.querySelector(`label[for="${field.id}"]`);
+            const fieldName = fieldLabel ? fieldLabel.textContent.replace('*','').trim() : field.name;
+
+
+            if (field.required) {
+                if (field.type === "checkbox") {
+                    // If it's the 'other_challenges' checkbox and it's checked, its corresponding textarea is now effectively required
+                    if (field.value === "other_challenges" && field.checked && challengesOtherText.value.trim() === '') {
+                        isValid = false;
+                        showError(challengesOtherText, 'Please specify other challenges or uncheck "Other".');
+                    } else {
+                        // For general required checkboxes, this is usually handled by group validation (e.g., challenges)
+                        // For now, assume single required checkboxes are valid if checked.
+                        // The 'challenges' group validation is handled in validateForm().
+                        isValid = field.checked; 
+                        if (!isValid && errorElement) showError(field, `Please check this box if applicable.`, errorElement);
+                    }
+                } else if (field.type === "select-one" && field.value === "") {
+                    isValid = false;
+                    if (errorElement) showError(field, `Please select an option for ${fieldName}.`, errorElement);
+                } else if (field.type === "number") {
+                    if (field.value === "" || (field.min && parseInt(field.value) < parseInt(field.min)) || (field.max && parseInt(field.value) > parseInt(field.max))) {
+                        isValid = false;
+                        if (errorElement) showError(field, `Please enter a valid ${fieldName.toLowerCase()} (between ${field.min} and ${field.max}).`, errorElement);
+                    }
+                } else if (field.value.trim() === "") {
+                    isValid = false;
+                    if (errorElement) showError(field, `Please enter ${fieldName.toLowerCase()}.`, errorElement);
+                }
+            }
+
+            // Specific validations not covered by 'required'
+            if (field.id === 'child-age' && field.value !== "" && (parseInt(field.value) < 0 || parseInt(field.value) > 18)) {
+                isValid = false;
+                if (errorElement) showError(field, 'Child\'s age must be between 0 and 18.', errorElement);
+            }
+
+            if (isValid && errorElement) {
+                clearError(field, errorElement);
+            }
+            return isValid;
+        }
+        
+        function validateForm() {
+            let isFormValid = true;
+            const elementsToValidate = Array.from(assessmentForm.elements).filter(el => el.name && (el.type !== 'hidden' && el.type !== 'submit' && el.type !== 'button' && el.type !== 'reset'));
+
+            elementsToValidate.forEach(field => {
+                if (!validateField(field)) {
+                    isFormValid = false;
+                }
+            });
+
+            // Validate checkbox group 'challenges' - at least one must be checked
+            const challengesChecked = Array.from(assessmentForm.querySelectorAll('input[name="challenges"]:checked')).length > 0;
+            const challengesErrorElement = document.getElementById('challenges-error');
+            if (!challengesChecked && document.querySelector('fieldset legend.required')?.textContent.includes('Specific Challenges Observed')) {
+                showError(challengesCheckboxes[0], 'Please select at least one challenge.', challengesErrorElement); // Show error near the group
+                isFormValid = false;
+            } else if (challengesErrorElement) {
+                clearError(challengesCheckboxes[0], challengesErrorElement);
+            }
+            
+            // If "Other" challenge is checked, its textarea must be filled
+            if (challengesOtherCheckbox && challengesOtherCheckbox.checked && challengesOtherText.value.trim() === '') {
+                showError(challengesOtherText, 'Please specify other challenges or uncheck "Other".', document.getElementById('challenges-other-text-error'));
+                isFormValid = false;
+            } else if (challengesOtherCheckbox && challengesOtherCheckbox.checked) {
+                 clearError(challengesOtherText, document.getElementById('challenges-other-text-error'));
+            }
+
+
+            if (!isFormValid) {
+                 const firstInvalidField = assessmentForm.querySelector('.invalid, [aria-invalid="true"]');
+                 if (firstInvalidField) {
+                     firstInvalidField.focus();
+                     // Optionally, scroll to the first invalid field
+                     firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                 }
+            }
+            return isFormValid;
+        }
+
+        function showError(field, message, errorElement) {
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+            field.classList.add('invalid');
+            field.setAttribute('aria-invalid', 'true');
+            field.setAttribute('aria-describedby', errorElement ? errorElement.id : '');
+        }
+
+        function clearError(field, errorElement) {
+             if (errorElement) {
+                errorElement.textContent = '';
+                errorElement.style.display = 'none';
+            }
+            field.classList.remove('invalid');
+            field.removeAttribute('aria-invalid');
+            field.removeAttribute('aria-describedby');
+        }
+
+
+        // --- FORM SUBMISSION & RESULTS ---
+        async function handleSubmit(event) {
+            event.preventDefault();
+            const submitButton = document.getElementById('submit-assessment-button');
+            const buttonText = submitButton.querySelector('.button-text');
+            const spinner = submitButton.querySelector('.spinner');
+
+            if (!validateForm()) {
+                // Find first invalid field and focus it
+                const firstInvalid = assessmentForm.querySelector('.invalid, [aria-invalid="true"]');
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                    firstInvalid.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
+                return;
+            }
+
+            // Show processing state
+            buttonText.textContent = 'Processing...';
+            spinner.style.display = 'inline-block';
+            submitButton.disabled = true;
+
+            // Simulate API call / processing delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const formData = new FormData(assessmentForm);
+            const data = Object.fromEntries(formData.entries());
+            data.challenges = Array.from(assessmentForm.querySelectorAll('input[name="challenges"]:checked')).map(cb => cb.value); // Get all checked challenges
+
+            generateResults(data);
+            
+            // Update UI
+            buttonText.textContent = 'Submit Assessment';
+            spinner.style.display = 'none';
+            submitButton.disabled = false;
+            
+            localStorage.setItem(LOCAL_STORAGE_KEY + '_submitted', 'true');
+            enableResultsTab();
+            showSection('results', document.querySelector('nav a[href="#results"]'));
+        }
+
+        function generateResults(data) {
+            const resultsList = document.getElementById('results-list');
+            resultsList.innerHTML = ''; // Clear previous results
+            const recommendations = [];
+
+            // Populate summary
+            document.getElementById('summary-age').textContent = data.childAge || 'N/A';
+            document.getElementById('summary-county').textContent = data.childCounty || 'N/A';
+            document.getElementById('summary-diagnosis-status').textContent = data.diagnosisStatus ? document.querySelector(`#diagnosis option[value="${data.diagnosisStatus}"]`).textContent : 'N/A';
+            
+            if (data.diagnosisStatus === 'yes' && data.diagnosisDetails) {
+                document.getElementById('summary-diagnosis-details').textContent = data.diagnosisDetails;
+                document.getElementById('summary-diagnosis-details-para').style.display = 'block';
+            } else {
+                document.getElementById('summary-diagnosis-details-para').style.display = 'none';
+            }
+
+            document.getElementById('summary-disability-type').textContent = data.disabilityType ? document.querySelector(`#disability-type option[value="${data.disabilityType}"]`).textContent : 'N/A';
+            if (data.disabilityType === 'other' && data.disabilityTypeOther) {
+                 document.getElementById('summary-disability-type').textContent += ` (${data.disabilityTypeOther})`;
+            }
+
+
+            const challengeLabels = data.challenges.map(val => {
+                const labelEl = assessmentForm.querySelector(`input[name="challenges"][value="${val}"]`);
+                return labelEl ? labelEl.parentElement.textContent.trim() : val;
+            });
+            document.getElementById('summary-challenges').textContent = challengeLabels.length > 0 ? challengeLabels.join(', ') : 'None specified';
+             if (data.challenges.includes('other_challenges') && data.challengesOtherText) {
+                document.getElementById('summary-challenges').textContent += ` (Other: ${data.challengesOtherText})`;
+            }
+
+
+            document.getElementById('summary-therapies-status').textContent = data.therapiesStatus ? document.querySelector(`#therapies option[value="${data.therapiesStatus}"]`).textContent : 'N/A';
+            if ((data.therapiesStatus === 'yes' || data.therapiesStatus === 'waiting_list') && data.therapiesDetailsText) {
+                document.getElementById('summary-therapies-details').textContent = data.therapiesDetailsText;
+                document.getElementById('summary-therapies-details-para').style.display = 'block';
+            } else {
+                document.getElementById('summary-therapies-details-para').style.display = 'none';
+            }
+            document.getElementById('summary-additional-support').textContent = data.additionalSupportSought || 'N/A';
+
+
+            // --- Recommendation Logic ---
+            recommendations.push(`<strong>Based on the information for a child aged ${data.childAge} in ${data.childCounty}, here are some general considerations:</strong>`);
+
+            if (data.diagnosisStatus === 'no' || data.diagnosisStatus === 'pending') {
+                recommendations.push('It is highly recommended to pursue a formal <a href="https://www2.hse.ie/services/disability/disability-assessment/" target="_blank" rel="noopener noreferrer">Assessment of Need (AON)</a> through your local CDNT. This is the first step to accessing many HSE supports. If you suspect a disability but have no diagnosis, consult your GP who can refer you or guide you to the CDNT.');
+            } else if (data.diagnosisStatus === 'yes') {
+                recommendations.push(`With a diagnosis of '${data.diagnosisDetails || data.disabilityType}', ensure your local CDNT is aware. They can help coordinate services. If not already connected, make this a priority.`);
+            }
+
+            // Age-specific considerations
+            if (parseInt(data.childAge) < 6) {
+                recommendations.push('For children under 6, early intervention is key. Your CDNT will focus on therapies and supports to aid development. Explore local parent and toddler groups that are inclusive or disability-specific.');
+            } else if (parseInt(data.childAge) >= 6 && parseInt(data.childAge) <= 12) {
+                recommendations.push('For school-aged children, liaise with the school and the <a href="https://ncse.ie/for-parents" target="_blank" rel="noopener noreferrer">National Council for Special Education (NCSE)</a> for educational supports like SNA access, resource hours, and assistive technology. Ensure an Individual Education Plan (IEP) is in place if appropriate.');
+            } else if (parseInt(data.childAge) > 12) {
+                recommendations.push('For older children and teenagers, focus on transition planning for post-school options, continued educational support, and developing independence skills. The NCSE and CDNT can assist with this.');
+            }
+
+            // Disability type specific
+            const disabilityActions = {
+                'autism': 'Explore resources from <a href="https://autism.ie/" target="_blank" rel="noopener noreferrer">AsIAm</a> and look into social skills groups and sensory support strategies.',
+                'adhd': 'Consider behavioural therapies, school accommodations, and resources from ADHD Ireland (if available, or UK equivalents for info).',
+                'intellectual': 'Connect with <a href="https://www.inclusionireland.ie/" target="_blank" rel="noopener noreferrer">Inclusion Ireland</a> for advocacy and information. Focus on life skills and tailored educational programs.',
+                'learning_specific': 'Seek assessment for specific learning difficulties (e.g., dyslexia) if not already done. The <a href="https://www.dyslexia.ie/" target="_blank" rel="noopener noreferrer">Dyslexia Association of Ireland</a> offers great resources.',
+                'communication_speech': 'Prioritize Speech and Language Therapy. Augmentative and Alternative Communication (AAC) might be beneficial if speech is significantly impacted.',
+                'physical_mobility': 'Investigate Physiotherapy and Occupational Therapy. Ensure the environment (home, school) is accessible. <a href="https://iwa.ie/" target="_blank" rel="noopener noreferrer">Irish Wheelchair Association</a> may have relevant services.',
+                'sensory_vision': 'Contact <a href="https://www.ncbi.ie/" target="_blank" rel="noopener noreferrer">NCBI (National Council for the Blind of Ireland)</a> for support, assistive technology, and mobility training.',
+                'sensory_hearing': 'Connect with <a href="https://www.chime.ie/" target="_blank" rel="noopener noreferrer">Chime (National Charity for Deafness and Hearing Loss)</a> for audiology services, communication support, and technology.',
+                'mental_health': 'Access Child and Adolescent Mental Health Services (CAMHS) via GP or CDNT referral. Explore local youth mental health supports.',
+                'chronic_illness': 'Work closely with medical specialists. Ensure the school has a care plan. Explore support groups for the specific condition.',
+                'developmental_delay': 'Early and consistent intervention across multiple therapy disciplines (Speech, OT, Physio) is crucial. CDNTs are central to managing Global Developmental Delay.',
+                'multiple': 'A multidisciplinary team approach via the CDNT is essential. Focus on coordinating care and prioritizing needs. Consider respite services if available.'
+            };
+            if (data.disabilityType && disabilityActions[data.disabilityType]) {
+                recommendations.push(disabilityActions[data.disabilityType]);
+            } else if (data.disabilityType === 'unsure' || data.disabilityType === 'other') {
+                recommendations.push('Since the primary concern is "Other" or "Unsure", a comprehensive AON is critical to identify specific needs and appropriate supports.');
+            }
+            
+            // Challenges specific
+            if (data.challenges.includes('learning_memory_concentration')) {
+                recommendations.push('Discuss educational psychology assessments with the school or NCSE to understand learning needs better. Explore strategies for attention and memory support.');
+            }
+            if (data.challenges.includes('communication_understanding')) {
+                recommendations.push('If not already engaged, seek a Speech and Language Therapist referral. Visual aids and simplified language can be helpful communication strategies at home and school.');
+            }
+            if (data.challenges.includes('social_interaction') || data.challenges.includes('emotional_regulation')) {
+                recommendations.push('Consider social skills groups, play therapy (for younger children), or counselling. Parenting courses on managing challenging behaviour or supporting emotional development can also be beneficial.');
+            }
+             if (data.challenges.includes('self_care')) {
+                recommendations.push('Occupational Therapy can provide strategies and aids to develop self-care skills. Break down tasks into smaller, manageable steps.');
+            }
+            if (data.challenges.includes('sensory_processing')) {
+                recommendations.push('An Occupational Therapist with sensory integration expertise can provide a sensory diet and strategies to manage sensory sensitivities or seeking behaviours.');
+            }
+
+
+            // Therapies status
+            if (data.therapiesStatus === 'no') {
+                recommendations.push('Given the identified challenges, it is important to discuss potential therapy needs (e.g., Speech Therapy, Occupational Therapy, Physiotherapy, Psychology) with your GP and CDNT as part of the AON process.');
+            } else if (data.therapiesStatus === 'waiting_list') {
+                recommendations.push(`While on waiting lists for: ${data.therapiesDetailsText || 'specified therapies'}, explore any available parent training programs or online resources from reputable organizations related to your child's needs. Keep in regular contact with the service provider regarding your place on the list.`);
+            } else if (data.therapiesStatus === 'yes') {
+                 recommendations.push(`Continue with current therapies: ${data.therapiesDetailsText || 'as specified'}. Ensure regular reviews with therapists to track progress and adjust goals. Share therapy reports with the school and other relevant professionals (with consent).`);
+            }
+
+            // General advice
+            recommendations.push('Document everything: keep records of appointments, reports, communications with schools and HSE services. This will be invaluable.');
+            recommendations.push('Connect with other parents: Parent support groups (local or national, online or in-person) can provide invaluable emotional support, practical advice, and shared experiences. Check with your CDNT or national disability organizations for listings.');
+            recommendations.push(`Explore entitlements: Check <a href="https://www.citizensinformation.ie/en/social_welfare/social_welfare_payments/disability_and_illness/" target="_blank" rel="noopener noreferrer">Citizens Information</a> for potential financial supports such as Domiciliary Care Allowance, Carer's Allowance/Benefit, Incapacity Benefit (for older children), and grants for housing adaptation or medical aids.`);
+            recommendations.push(`<strong>This tool is a starting point. Your primary contact for official assessment and support coordination is your local <a href="https://www2.hse.ie/services/disability/childrens-services/services/overview/" target="_blank" rel="noopener noreferrer">Children's Disability Network Team (CDNT)</a>.</strong>`);
+
+            recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.innerHTML = rec; // Using innerHTML because rec can contain HTML links
+                resultsList.appendChild(li);
+            });
+        }
+
+        function enableResultsTab() {
+            if (navResultsLink) {
+                navResultsLink.classList.remove('nav-disabled');
+                navResultsLink.setAttribute('aria-disabled', 'false');
+                navResultsLink.setAttribute('aria-label', 'View Assessment Results');
+            }
+        }
+        function disableResultsTab() {
+             if (navResultsLink) {
+                navResultsLink.classList.add('nav-disabled');
+                navResultsLink.setAttribute('aria-disabled', 'true');
+                navResultsLink.setAttribute('aria-label', 'View Assessment Results (Complete assessment first)');
+                // Prevent navigation if disabled
+                navResultsLink.onclick = (event) => {
+                    if (navResultsLink.classList.contains('nav-disabled')) {
+                        event.preventDefault();
+                        alert("Please complete and submit the assessment form to view results.");
+                        showSection('assessment', document.querySelector('nav a[href="#assessment"]'));
+                    } else {
+                        showSection('results', navResultsLink);
+                    }
+                };
+            }
+        }
+
+        // --- PRINT FUNCTIONALITY ---
+        function printResults() {
+            const resultsSection = document.getElementById('results');
+            const originalContent = document.body.innerHTML;
+            const printContent = resultsSection.innerHTML;
+            
+            document.body.innerHTML = `
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; color: #333;}
+                    h2, h3 { color: #0055a4; }
+                    .disclaimer-box { border: 1px solid #d32f2f; padding: 10px; margin-bottom:15px; background-color: #ffebee; }
+                    ul.resources { list-style-type: disc; padding-left: 20px; }
+                    ul.resources li { margin-bottom: 5px; }
+                    a { color: #0055a4; text-decoration: none; }
+                    .button-group, nav, header, footer { display: none !important; } /* Hide buttons and nav for print */
+                </style>
+                ${printContent}
+            `;
+            window.print();
+            document.body.innerHTML = originalContent; // Restore original content
+            
+            // Re-initialize necessary elements and event listeners as document.body.innerHTML wipes them
+            // This is a common issue. A better approach is CSS print styles.
+            // For now, just re-call initialize:
+            assessmentForm = document.getElementById(ASSESSMENT_FORM_ID); // Re-get form
+            progressBar = document.getElementById('progress-bar');
+            themeToggleButton = document.getElementById('theme-toggle');
+            navResultsLink = document.getElementById('nav-results');
+            childAgeInput = document.getElementById('child-age');
+            diagnosisSelect = document.getElementById('diagnosis');
+            diagnosisDetailsContainer = document.getElementById('diagnosis-details-container');
+            diagnosisDetailsInput = document.getElementById('diagnosis-details');
+            disabilityTypeSelect = document.getElementById('disability-type');
+            disabilityTypeOtherContainer = document.getElementById('disability-type-other-container');
+            disabilityTypeOtherText = document.getElementById('disability-type-other-text');
+            challengesCheckboxes = assessmentForm.querySelectorAll('input[name="challenges"]');
+            challengesOtherCheckbox = assessmentForm.querySelector('input[name="challenges"][value="other_challenges"]');
+            challengesOtherContainer = document.getElementById('challenges-other-container');
+            challengesOtherText = document.getElementById('challenges-other-text');
+            therapiesSelect = document.getElementById('therapies');
+            therapiesDetailsContainer = document.getElementById('therapies-details-container');
+            therapiesDetailsText = document.getElementById('therapies-details-text');
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            requiredFields = Array.from(assessmentForm.querySelectorAll('[required]'));
+
+            initializeState();
+            setupEventListeners();
+            // Restore the active section. This needs to be tracked or intelligently decided.
+            // For simplicity, go to results as that's where user was.
+            showSection('results', document.querySelector('nav a[href="#results"]'));
+        }
+
+    </script>
+</body>
+</html>
